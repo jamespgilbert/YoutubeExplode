@@ -39,6 +39,15 @@ namespace YouTubeDownloader
 
             var youtube = new YoutubeClient();
 
+            var video = await youtube.Videos.GetAsync(args[0]);
+            if(video == null)
+            {
+                Console.WriteLine($"ERROR: could not find youtube video {args[0]}");
+                return -1;
+            }
+            var channel = await youtube.Channels.GetAsync(video.ChannelId);
+
+            var videoTitle = video.Title;
             // Read the video ID
             var videoId = new VideoId(args[0]);
             if(videoId.Value == null)
@@ -54,11 +63,30 @@ namespace YouTubeDownloader
             {
                 return -1;
             }
-            var fileName = $"{videoId}.mp3";
+            var fileName = $"{PrepareForFilename(channel.Title)} - {PrepareForFilename(videoTitle)}.mp3";
             var dest = Path.Combine(destFolder, fileName);
             await youtube.Videos.Streams.DownloadAsync(streamInfo, dest, null);
+            //TagLib.File mp3File = TagLib.File.Create(dest);
+            //mp3File.Tag.Title = video.Title;
+            //mp3File.Tag.Description = video.Description;
+            //mp3File.Tag.Album = channel.Title;
+            //mp3File.Save();
+
             Console.WriteLine(dest);
             return 0;
         }
+        static string PrepareForFilename(string fname)
+        {
+            string ret = string.Empty;
+            for (var c = 0; c < fname.Length; c++)
+            {
+                if ("/\\?%*:|\"<>".Contains(fname[c]))
+                    ret += "";
+                else
+                    ret += fname[c];
+            }
+            return ret;
+        }
     }
+
 }
