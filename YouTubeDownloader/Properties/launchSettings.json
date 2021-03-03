@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "YouTubeDownloader": {
+      "commandName": "Project",
+      "commandLineArgs": "https://www.youtube.com/watch?v=-5Bno3m7TpQ C:\\Users\\james\\Downloads"
+    }
+  }
+}
